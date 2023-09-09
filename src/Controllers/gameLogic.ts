@@ -2,6 +2,7 @@ import SnakeModel from "../Models/snakeModel.js"
 import FieldTemplate from "../Templates/fieldTemplate.js"
 import { DotModelInterface, NextDotType, PositionType } from "../Models/dotModel"
 import deepClone from "../Utils/deepClone.js"
+import ModalTemplate from "../Templates/modalTemplate.js"
 
 type DirectionType = 'up' | 'down' | 'left' | 'right'
 
@@ -20,6 +21,7 @@ const gameLogic: GameLogicType = (() => {
 
     const snake = SnakeModel.instance
     const fieldTemplate = FieldTemplate.instance
+    const modal = ModalTemplate.instance
 
     let _direction: DirectionType = 'right'
     let unfilledPosition: PositionType | null = null
@@ -121,6 +123,7 @@ const gameLogic: GameLogicType = (() => {
             snakePosition.y === 400
         ) {
             crawl.stop()
+            modal.showModal(false)
             snake.revive()
             spawn()
         }

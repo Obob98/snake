@@ -1,5 +1,3 @@
-// the shallow copy function below is just a placeholedr, will be rewrittern in the near future
-
 const deepClone = (arg: Object): any => {
     if (typeof arg !== 'object') return arg
 

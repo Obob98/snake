@@ -1,16 +1,15 @@
 import SnakeModel from "../Models/snakeModel.js";
 import FieldTemplate from "../Templates/fieldTemplate.js";
 import deepClone from "../Utils/deepClone.js";
+import ModalTemplate from "../Templates/modalTemplate.js";
 const gameLogic = (() => {
     const snake = SnakeModel.instance;
     const fieldTemplate = FieldTemplate.instance;
+    const modal = ModalTemplate.instance;
     let _direction = 'right';
     let unfilledPosition = null;
     const spawn = () => {
         snake.head.nextDot = snake.tail;
-    };
-    const initializeGame = () => {
-        gameLogic.spawn();
         fieldTemplate.renderField();
     };
     const move = (dot) => {
@@ -88,13 +87,13 @@ const gameLogic = (() => {
             snakePosition.y < 0 ||
             snakePosition.y === 400) {
             crawl.stop();
+            modal.showModal(false);
             snake.revive();
-            initializeGame();
+            spawn();
         }
     };
     return {
         spawn,
-        initializeGame,
         move,
         crawl,
         changeDirection,
