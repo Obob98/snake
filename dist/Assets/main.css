@@ -1,0 +1,119 @@
+@font-face {
+    font-family: 'pops';
+    src: url('../Assets/fonts/Poppins/Poppins-Regular.ttf');
+  }
+  
+  *{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  :root {
+    font-family: 'pops', system-ui, Avenir, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    font-weight: 400;
+  
+    color-scheme: light dark;
+    color: rgba(255, 255, 255, 0.87);
+    background-color: #242424;
+  
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-text-size-adjust: 100%;
+  }
+  
+  html, body {
+    width: 100vw;
+    height: 100dvh;
+    overflow: hidden;
+  }
+  
+  a {
+    font-weight: 500;
+    color: #646cff;
+    text-decoration: inherit;
+  }
+  a:hover {
+    color: #535bf2;
+  }
+  
+  button:hover {
+    border-color: #646cff;
+  }
+  
+  button:focus,
+  button:focus-visible {
+    outline: 4px auto -webkit-focus-ring-color;
+  }
+  
+  main{
+    position: relative;
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  main .field{
+    box-sizing: content-box;
+    background: #000;
+    border: 5px solid #eee;
+    width: 100%;
+    width:  500px;
+    height: 400px;
+  }
+
+  main .field .snake{
+    position: relative;
+  }
+
+  .snake > div{
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    background: green;
+    /* border: 1px solid #000; */
+  }
+
+  main .panel{
+    padding: 10px;
+    display: flex;
+    gap: 20px;
+  }
+  
+  main .message-panel {
+    position: absolute;
+    display: none;
+  }
+
+  main .message-panel_danger{
+    color: red;
+  }
+
+  main .message-panel_success{
+    color: green;
+  }
+
+  main .controls-panel button{
+    padding: 5px 10px;
+  }
+  
+  @media (prefers-color-scheme: light) {
+    :root {
+      color: #213547;
+      background-color: #ffffff;
+    }
+    a:hover {
+      color: #747bff;
+    }
+    button {
+      background-color: #f9f9f9;
+    }
+  }
+  
