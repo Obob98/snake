@@ -1,12 +1,18 @@
 import SnakeModel from "../Models/snakeModel.js"
 import FieldTemplate from "../Templates/fieldTemplate.js"
-import { DotModelInterface, NextDotType, PositionType } from "../Models/dotModel"
+import DotModel, { DotModelInterface, NextDotType, PositionType } from "../Models/dotModel.js"
 import deepClone from "../Utils/deepClone.js"
 import ModalTemplate from "../Templates/modalTemplate.js"
+import PreyModel from "../Models/preyModel.js"
 
 type DirectionType = 'up' | 'down' | 'left' | 'right'
 
 type GameLogicType = {
+    gameStatus: {
+        paused: boolean,
+        gameOver: boolean,
+        speed: number
+    },
     spawn(): void,
     move(dot: DotModelInterface): void,
     crawl: {
@@ -14,21 +20,39 @@ type GameLogicType = {
         stop(): void
     },
     changeDirection(event: KeyboardEvent): void,
+    eat(): void,
     checkGameOver(): void,
+    reset(): void,
 }
 
 const gameLogic: GameLogicType = (() => {
 
     const snake = SnakeModel.instance
+    const prey = PreyModel.instance
     const fieldTemplate = FieldTemplate.instance
     const modal = ModalTemplate.instance
+
+    const gameStatus = {
+        paused: false,
+        gameOver: false,
+        speed: 300
+    }
 
     let _direction: DirectionType = 'right'
     let unfilledPosition: PositionType | null = null
 
+    const reset = (): void => {
+        gameStatus.paused = false,
+            gameStatus.gameOver = false
+
+        _direction = 'right'
+        unfilledPosition = null
+    }
+
     const spawn = (): void => {
         snake.head.nextDot = snake.tail
-        fieldTemplate.renderField()
+        fieldTemplate.renderDOMSnake()
+        fieldTemplate.renderDOMPrey()
     }
 
     const move = (dot: DotModelInterface): void => {
@@ -71,18 +95,22 @@ const gameLogic: GameLogicType = (() => {
 
         if (event.key === 'ArrowUp') {
             _direction = 'up'
+            continuePlaying()
         }
 
         if (event.key === 'ArrowDown') {
             _direction = 'down'
+            continuePlaying()
         }
 
         if (event.key === 'ArrowLeft') {
             _direction = 'left'
+            continuePlaying()
         }
 
         if (event.key === 'ArrowRight') {
             _direction = 'right'
+            continuePlaying()
         }
     }
 
@@ -98,9 +126,11 @@ const gameLogic: GameLogicType = (() => {
                     currentDot = currentDot.nextDot
                 }
 
+                eat()
+
                 unfilledPosition = null
-                fieldTemplate.renderField()
-            }, 200)
+                fieldTemplate.renderDOMSnake()
+            }, gameStatus.speed)
         }
 
         function stop() {
@@ -113,6 +143,27 @@ const gameLogic: GameLogicType = (() => {
         }
     })()
 
+    const eat = (): void => {
+        if (
+            snake.head.position.x === prey.position.x && snake.head.position.y === prey.position.y
+        ) {
+            const newDot = new DotModel({ x: snake.tail.position.x, y: snake.tail.position.y }, null)
+
+            snake.tail = newDot
+
+            prey.shufflePosition()
+            fieldTemplate.renderDOMPrey()
+        }
+    }
+
+    const continuePlaying = () => {
+        if (gameStatus.paused) {
+
+            gameStatus.paused = false
+            crawl.start()
+        }
+    }
+
     const checkGameOver = (): void => {
         const snakePosition = snake.head.position
 
@@ -122,19 +173,25 @@ const gameLogic: GameLogicType = (() => {
             snakePosition.y < 0 ||
             snakePosition.y === 400
         ) {
+            gameStatus.gameOver = true
+            _direction = 'right'
             crawl.stop()
-            modal.showModal(false)
+            modal.showModal('GAME OVER', false)
             snake.revive()
             spawn()
         }
     }
 
+
     return {
+        gameStatus,
         spawn,
         move,
         crawl,
         changeDirection,
+        eat,
         checkGameOver,
+        reset,
     }
 })()
 

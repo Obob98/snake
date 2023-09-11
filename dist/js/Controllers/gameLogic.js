@@ -1,16 +1,31 @@
 import SnakeModel from "../Models/snakeModel.js";
 import FieldTemplate from "../Templates/fieldTemplate.js";
+import DotModel from "../Models/dotModel.js";
 import deepClone from "../Utils/deepClone.js";
 import ModalTemplate from "../Templates/modalTemplate.js";
+import PreyModel from "../Models/preyModel.js";
 const gameLogic = (() => {
     const snake = SnakeModel.instance;
+    const prey = PreyModel.instance;
     const fieldTemplate = FieldTemplate.instance;
     const modal = ModalTemplate.instance;
+    const gameStatus = {
+        paused: false,
+        gameOver: false,
+        speed: 300
+    };
     let _direction = 'right';
     let unfilledPosition = null;
+    const reset = () => {
+        gameStatus.paused = false,
+            gameStatus.gameOver = false;
+        _direction = 'right';
+        unfilledPosition = null;
+    };
     const spawn = () => {
         snake.head.nextDot = snake.tail;
-        fieldTemplate.renderField();
+        fieldTemplate.renderDOMSnake();
+        fieldTemplate.renderDOMPrey();
     };
     const move = (dot) => {
         if (!unfilledPosition) {
@@ -48,15 +63,19 @@ const gameLogic = (() => {
         ///////////////////////////////////////////////////////////////
         if (event.key === 'ArrowUp') {
             _direction = 'up';
+            continuePlaying();
         }
         if (event.key === 'ArrowDown') {
             _direction = 'down';
+            continuePlaying();
         }
         if (event.key === 'ArrowLeft') {
             _direction = 'left';
+            continuePlaying();
         }
         if (event.key === 'ArrowRight') {
             _direction = 'right';
+            continuePlaying();
         }
     }
     const crawl = (() => {
@@ -68,9 +87,10 @@ const gameLogic = (() => {
                     move(currentDot);
                     currentDot = currentDot.nextDot;
                 }
+                eat();
                 unfilledPosition = null;
-                fieldTemplate.renderField();
-            }, 200);
+                fieldTemplate.renderDOMSnake();
+            }, gameStatus.speed);
         }
         function stop() {
             clearInterval(interval);
@@ -80,24 +100,43 @@ const gameLogic = (() => {
             stop
         };
     })();
+    const eat = () => {
+        if (snake.head.position.x === prey.position.x && snake.head.position.y === prey.position.y) {
+            const newDot = new DotModel({ x: snake.tail.position.x, y: snake.tail.position.y }, null);
+            snake.tail = newDot;
+            prey.shufflePosition();
+            fieldTemplate.renderDOMPrey();
+        }
+    };
+    const continuePlaying = () => {
+        if (gameStatus.paused) {
+            gameStatus.paused = false;
+            crawl.start();
+        }
+    };
     const checkGameOver = () => {
         const snakePosition = snake.head.position;
         if (snakePosition.x < 0 ||
             snakePosition.x === 500 ||
             snakePosition.y < 0 ||
             snakePosition.y === 400) {
+            gameStatus.gameOver = true;
+            _direction = 'right';
             crawl.stop();
-            modal.showModal(false);
+            modal.showModal('GAME OVER', false);
             snake.revive();
             spawn();
         }
     };
     return {
+        gameStatus,
         spawn,
         move,
         crawl,
         changeDirection,
+        eat,
         checkGameOver,
+        reset,
     };
 })();
 export default gameLogic;

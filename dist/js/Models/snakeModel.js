@@ -24,7 +24,9 @@ class SnakeModel {
         return this._tail;
     }
     set tail(dot) {
-        this._tail = dot;
+        let newDot = dot;
+        this._tail.nextDot = newDot;
+        this._tail = newDot;
     }
     get size() {
         return this._size;

@@ -31,7 +31,6 @@ export default class SnakeModel implements SnakeModelInterface {
     }
 
     set head(dot: Dot) {
-
         this._head = dot
     }
 
@@ -40,7 +39,9 @@ export default class SnakeModel implements SnakeModelInterface {
     }
 
     set tail(dot: Dot) {
-        this._tail = dot
+        let newDot = dot
+        this._tail.nextDot = newDot
+        this._tail = newDot
     }
 
     get size(): number {

@@ -61,6 +61,7 @@
   }
 
   main .field{
+    position: relative;
     box-sizing: content-box;
     background: #000;
     border: 5px solid #eee;
@@ -80,6 +81,17 @@
     background: green;
     /* border: 1px solid #000; */
   }
+  
+  main .field .pray{
+    position: relative;
+  }
+
+  .prey > div{
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    background: rgb(128, 0, 102);
+  }
 
   main .panel{
     padding: 10px;
@@ -90,6 +102,7 @@
   main .message-panel {
     position: absolute;
     display: none;
+    z-index: 99;
   }
 
   main .message-panel_danger{
