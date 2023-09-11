@@ -33,6 +33,7 @@ const initApp = () => {
         snake.revive();
         game.crawl.stop();
         game.reset();
+        modal.hideModal();
         startNewGame();
     });
     window.addEventListener('keyup', game.changeDirection);

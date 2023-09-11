@@ -42,6 +42,7 @@ const initApp = () => {
         snake.revive()
         game.crawl.stop()
         game.reset()
+        modal.hideModal()
         startNewGame()
     })
 

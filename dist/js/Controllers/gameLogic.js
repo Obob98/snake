@@ -17,13 +17,15 @@ const gameLogic = (() => {
     let _direction = 'right';
     let unfilledPosition = null;
     const reset = () => {
-        gameStatus.paused = false,
-            gameStatus.gameOver = false;
+        gameStatus.paused = false;
+        gameStatus.gameOver = false;
         _direction = 'right';
         unfilledPosition = null;
     };
     const spawn = () => {
         snake.head.nextDot = snake.tail;
+        console.log('head', snake.head);
+        console.log('tail', snake.tail);
         fieldTemplate.renderDOMSnake();
         fieldTemplate.renderDOMPrey();
     };
@@ -45,7 +47,9 @@ const gameLogic = (() => {
             checkGameOver();
         }
         else {
-            const temp = { ...dot.position };
+            if (gameStatus.gameOver)
+                return;
+            const temp = deepClone(dot.position);
             dot.position = unfilledPosition;
             unfilledPosition = temp;
         }
@@ -119,13 +123,24 @@ const gameLogic = (() => {
         if (snakePosition.x < 0 ||
             snakePosition.x === 500 ||
             snakePosition.y < 0 ||
-            snakePosition.y === 400) {
+            snakePosition.y === 400 ||
+            gameStatus.gameOver) {
             gameStatus.gameOver = true;
             _direction = 'right';
             crawl.stop();
             modal.showModal('GAME OVER', false);
             snake.revive();
             spawn();
+            return;
+        }
+        let currentDot = snake.head.nextDot;
+        while (currentDot) {
+            if (snakePosition.x === currentDot.position.x &&
+                snakePosition.y === currentDot.position.y) {
+                gameStatus.gameOver = true;
+                checkGameOver;
+            }
+            currentDot = currentDot.nextDot;
         }
     };
     return {
